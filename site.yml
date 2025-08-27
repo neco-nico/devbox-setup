@@ -1,0 +1,10 @@
+---
+- name: Setup devbox environment
+  hosts: localhost
+  connection: local
+  gather_facts: yes
+  vars:
+    ansible_python_interpreter: /opt/homebrew/bin/python3.13
+  roles:
+    - common
+    - git
