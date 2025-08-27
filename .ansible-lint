@@ -1,0 +1,12 @@
+---
+exclude_paths:
+  - .cache/
+  - .github/
+  - venv/
+  - __pycache__/
+
+skip_list:
+  - yaml[line-length]
+
+warn_list:
+  - experimental
