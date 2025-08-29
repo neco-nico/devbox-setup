@@ -33,4 +33,4 @@ jobs:
 
       - name: Run ansible-playbook --check
         run: |
-          ansible-playbook --check site.yml
+          ansible-playbook --check -i localhost, site.yml
