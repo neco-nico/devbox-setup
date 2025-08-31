@@ -7,19 +7,19 @@
       stat:
         path: /home/testuser/.bashrc
       register: bashrc_stat
-    
+
     - name: Verify .bashrc was created
       assert:
         that:
           - bashrc_stat.stat.exists
         fail_msg: ".bashrc was not created"
         success_msg: ".bashrc exists"
-    
+
     - name: Check if bash config directory exists
       stat:
         path: /home/testuser/.config/bash
       register: bash_config_stat
-    
+
     - name: Verify bash config directory was created
       assert:
         that:
@@ -27,7 +27,7 @@
           - bash_config_stat.stat.isdir
         fail_msg: "bash config directory was not created"
         success_msg: "bash config directory exists"
-    
+
     - name: Check if devbox configuration is sourced in .bashrc
       lineinfile:
         path: /home/testuser/.bashrc
@@ -35,14 +35,14 @@
         state: present
       check_mode: yes
       register: source_check
-    
+
     - name: Verify devbox configuration is sourced
       assert:
         that:
           - not source_check.changed
         fail_msg: "Devbox configuration sourcing not found in .bashrc"
         success_msg: "Devbox configuration is properly sourced"
-    
+
     - name: Verify ansible managed block markers exist
       lineinfile:
         path: /home/testuser/.bashrc
@@ -50,7 +50,7 @@
         state: present
       check_mode: yes
       register: begin_marker_check
-    
+
     - name: Verify begin marker exists
       assert:
         that:

@@ -7,14 +7,14 @@
       stat:
         path: /home/testuser/.bashrc
       register: bashrc_stat
-    
+
     - name: Verify .bashrc was created
       assert:
         that:
           - bashrc_stat.stat.exists
         fail_msg: ".bashrc was not created"
         success_msg: ".bashrc exists"
-    
+
     - name: Check if Volta environment variables are in .bashrc
       lineinfile:
         path: /home/testuser/.bashrc
@@ -22,14 +22,14 @@
         state: present
       check_mode: yes
       register: volta_home_check
-    
+
     - name: Verify Volta HOME is configured
       assert:
         that:
           - not volta_home_check.changed
         fail_msg: "Volta HOME environment variable not found in .bashrc"
         success_msg: "Volta HOME environment variable configured"
-    
+
     - name: Check if PATH is configured for Volta
       lineinfile:
         path: /home/testuser/.bashrc
@@ -37,7 +37,7 @@
         state: present
       check_mode: yes
       register: volta_path_check
-    
+
     - name: Verify Volta PATH is configured
       assert:
         that:
