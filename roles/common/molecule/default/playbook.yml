@@ -1,12 +1,12 @@
 ---
 - name: Test common role
   hosts: all
-  gather_facts: yes
-  become: yes
+  gather_facts: true
+  become: true
   pre_tasks:
     - name: Update apt cache
       ansible.builtin.apt:
-        update_cache: yes
+        update_cache: true
       when: ansible_os_family == "Debian"
 
     - name: Install basic packages for testing
@@ -20,7 +20,7 @@
       ansible.builtin.user:
         name: testuser
         shell: /bin/bash
-        create_home: yes
+        create_home: true
         home: /home/testuser
       register: test_user
 

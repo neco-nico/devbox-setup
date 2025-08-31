@@ -12,5 +12,5 @@
       # Source custom configuration from devbox-setup
       [ -f "{{ playbook_dir }}/dotfile/bash/.bashrc" ] && source "{{ playbook_dir }}/dotfile/bash/.bashrc"
     marker: "# {mark} ANSIBLE MANAGED BLOCK - Devbox configuration"
-    create: yes
+    create: true
     mode: '0644'

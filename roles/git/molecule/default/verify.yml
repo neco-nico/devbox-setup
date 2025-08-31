@@ -1,7 +1,7 @@
 ---
 - name: Verify git role
   hosts: all
-  gather_facts: no
+  gather_facts: false
   tasks:
     - name: Check if .bashrc exists
       ansible.builtin.stat:
@@ -33,7 +33,7 @@
         path: /home/testuser/.bashrc
         line: '[ -f "{{ playbook_dir }}/dotfile/bash/.bashrc" ] && source "{{ playbook_dir }}/dotfile/bash/.bashrc"'
         state: present
-      check_mode: yes
+      check_mode: true
       register: source_check
 
     - name: Verify devbox configuration is sourced
@@ -48,7 +48,7 @@
         path: /home/testuser/.bashrc
         line: "# BEGIN ANSIBLE MANAGED BLOCK - Devbox configuration"
         state: present
-      check_mode: yes
+      check_mode: true
       register: begin_marker_check
 
     - name: Verify begin marker exists
