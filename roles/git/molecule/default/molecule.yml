@@ -1,0 +1,20 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+platforms:
+  - name: instance
+    image: ubuntu:20.04
+    pre_build_image: true
+    command: /bin/bash
+    tty: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callbacks_enabled: profile_tasks,timer,yaml
+    ssh_connection:
+      pipelining: false
+verifier:
+  name: ansible

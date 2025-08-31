@@ -1,0 +1,54 @@
+---
+- name: Test git role
+  hosts: all
+  gather_facts: yes
+  become: yes
+  pre_tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+    
+    - name: Install basic packages for testing
+      package:
+        name:
+          - curl
+          - sudo
+          - git
+        state: present
+    
+    - name: Create test user
+      user:
+        name: testuser
+        shell: /bin/bash
+        create_home: yes
+        home: /home/testuser
+      register: test_user
+    
+    - name: Set HOME environment variable for test user
+      set_fact:
+        ansible_env:
+          HOME: "/home/testuser"
+          PATH: "/usr/local/bin:/usr/bin:/bin"
+    
+    - name: Create dotfile directory structure for testing
+      file:
+        path: "{{ playbook_dir }}/dotfile/bash"
+        state: directory
+        recurse: yes
+    
+    - name: Create test .bashrc in dotfile directory
+      copy:
+        content: |
+          alias gb='git branch'
+          alias gc='git checkout'
+          alias gp='git pull'
+          alias gph='git push'
+          alias gs='git stash'
+          alias gsa='git stash apply'
+        dest: "{{ playbook_dir }}/dotfile/bash/.bashrc"
+  
+  tasks:
+    - name: Include git role
+      include_role:
+        name: git
