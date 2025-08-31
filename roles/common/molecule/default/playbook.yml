@@ -5,19 +5,19 @@
   become: yes
   pre_tasks:
     - name: Update apt cache
-      apt:
+      ansible.builtin.apt:
         update_cache: yes
       when: ansible_os_family == "Debian"
 
     - name: Install basic packages for testing
-      package:
+      ansible.builtin.package:
         name:
           - curl
           - sudo
         state: present
 
     - name: Create test user
-      user:
+      ansible.builtin.user:
         name: testuser
         shell: /bin/bash
         create_home: yes
@@ -25,27 +25,27 @@
       register: test_user
 
     - name: Set HOME environment variable for test user
-      set_fact:
+      ansible.builtin.set_fact:
         ansible_env:
           HOME: "/home/testuser"
           PATH: "/usr/local/bin:/usr/bin:/bin"
 
     - name: Install Node.js (as volta alternative for testing)
-      package:
+      ansible.builtin.package:
         name: nodejs
         state: present
       when: ansible_os_family == "Debian"
 
     - name: Install npm
-      package:
+      ansible.builtin.package:
         name: npm
         state: present
       when: ansible_os_family == "Debian"
 
   tasks:
     - name: Include common role
-      include_role:
+      ansible.builtin.include_role:
         name: common
       vars:
         # Skip homebrew tasks in Docker
-        skip_homebrew: true
+        common_skip_homebrew: true
