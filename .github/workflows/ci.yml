@@ -23,6 +23,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install ansible ansible-lint yamllint
 
+      - name: Install ansible collections
+        run: |
+          ansible-galaxy collection install -r requirements.yml
+
       - name: Run yamllint
         run: |
           yamllint .
@@ -31,6 +35,10 @@ jobs:
         run: |
           ansible-lint
 
-      - name: Run ansible-playbook --check
+      - name: Run ansible-playbook syntax check
         run: |
-          ansible-playbook --check site.yml
+          ansible-playbook --syntax-check site.yml
+
+      - name: Run ansible-playbook dry run
+        run: |
+          ansible-playbook --check --diff -i localhost, site.yml

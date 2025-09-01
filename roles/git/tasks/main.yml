@@ -1,0 +1,16 @@
+---
+- name: Create bash config directory
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.config/bash"
+    state: directory
+    mode: '0755'
+
+- name: Source dotfile/.bashrc from main .bashrc
+  ansible.builtin.blockinfile:
+    path: "{{ ansible_env.HOME }}/.bashrc"
+    block: |
+      # Source custom configuration from devbox-setup
+      [ -f "{{ playbook_dir }}/dotfile/bash/.bashrc" ] && source "{{ playbook_dir }}/dotfile/bash/.bashrc"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - Devbox configuration"
+    create: true
+    mode: '0644'

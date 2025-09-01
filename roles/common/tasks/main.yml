@@ -1,0 +1,63 @@
+---
+- name: Install development tools via Homebrew
+  community.general.homebrew:
+    name:
+      - git
+      - tig
+      - wget
+      - gh
+      - fzf
+      - ripgrep
+      - volta
+    state: present
+  environment:
+    PATH: "/opt/homebrew/bin:{{ ansible_env.PATH }}"
+
+- name: Create .bashrc if it doesn't exist
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.bashrc"
+    state: touch
+    mode: '0644'
+  changed_when: false
+
+- name: Add Volta environment variables to .bashrc
+  ansible.builtin.blockinfile:
+    path: "{{ ansible_env.HOME }}/.bashrc"
+    block: |
+      export VOLTA_HOME="$HOME/.volta"
+      export PATH="$VOLTA_HOME/bin:$PATH"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - Volta"
+
+- name: Initialize Volta and install Node.js
+  ansible.builtin.shell: |
+    export VOLTA_HOME="$HOME/.volta"
+    export PATH="$VOLTA_HOME/bin:$PATH"
+    # Initialize volta if needed
+    if [ ! -d "$HOME/.volta" ]; then
+      volta setup
+    fi
+    # Install node
+    volta install node
+  args:
+    creates: "{{ ansible_env.HOME }}/.volta/bin/node"
+  environment:
+    PATH: "/usr/local/opt/volta/bin:/opt/homebrew/bin:$PATH"
+
+- name: Enable corepack and prepare Yarn
+  ansible.builtin.shell: |
+    export VOLTA_HOME="$HOME/.volta"
+    export PATH="$VOLTA_HOME/bin:$PATH"
+    corepack enable
+    corepack prepare yarn@stable --activate
+  args:
+    creates: "{{ ansible_env.HOME }}/.volta/bin/yarn"
+  environment:
+    PATH: "$HOME/.volta/bin:/usr/local/opt/volta/bin:/opt/homebrew/bin:{{ ansible_env.PATH }}"
+  changed_when: false
+
+- name: Install Claude Code globally
+  community.general.npm:
+    name: "@anthropic-ai/claude-code"
+    global: true
+  environment:
+    PATH: "$HOME/.volta/bin:/usr/local/opt/volta/bin:/opt/homebrew/bin:{{ ansible_env.PATH }}"

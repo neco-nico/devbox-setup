@@ -1,0 +1,46 @@
+---
+- name: Verify common role
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Check if .bashrc exists
+      ansible.builtin.stat:
+        path: /home/testuser/.bashrc
+      register: bashrc_stat
+
+    - name: Verify .bashrc was created
+      ansible.builtin.assert:
+        that:
+          - bashrc_stat.stat.exists
+        fail_msg: ".bashrc was not created"
+        success_msg: ".bashrc exists"
+
+    - name: Check if Volta environment variables are in .bashrc
+      ansible.builtin.lineinfile:
+        path: /home/testuser/.bashrc
+        line: 'export VOLTA_HOME="$HOME/.volta"'
+        state: present
+      check_mode: true
+      register: volta_home_check
+
+    - name: Verify Volta HOME is configured
+      ansible.builtin.assert:
+        that:
+          - not volta_home_check.changed
+        fail_msg: "Volta HOME environment variable not found in .bashrc"
+        success_msg: "Volta HOME environment variable configured"
+
+    - name: Check if PATH is configured for Volta
+      ansible.builtin.lineinfile:
+        path: /home/testuser/.bashrc
+        line: 'export PATH="$VOLTA_HOME/bin:$PATH"'
+        state: present
+      check_mode: true
+      register: volta_path_check
+
+    - name: Verify Volta PATH is configured
+      ansible.builtin.assert:
+        that:
+          - not volta_path_check.changed
+        fail_msg: "Volta PATH not found in .bashrc"
+        success_msg: "Volta PATH configured"

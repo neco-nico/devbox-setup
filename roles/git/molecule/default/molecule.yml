@@ -1,0 +1,23 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: delegated
+  options:
+    ansible_connection_options:
+      ansible_connection: local
+platforms:
+  - name: localhost
+provisioner:
+  name: ansible
+  inventory:
+    host_vars:
+      localhost:
+        ansible_connection: local
+  config_options:
+    defaults:
+      callbacks_enabled: profile_tasks,timer,yaml
+    ssh_connection:
+      pipelining: false
+verifier:
+  name: ansible

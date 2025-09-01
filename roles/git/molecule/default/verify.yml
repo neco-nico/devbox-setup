@@ -1,0 +1,59 @@
+---
+- name: Verify git role
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Check if .bashrc exists
+      ansible.builtin.stat:
+        path: /home/testuser/.bashrc
+      register: bashrc_stat
+
+    - name: Verify .bashrc was created
+      ansible.builtin.assert:
+        that:
+          - bashrc_stat.stat.exists
+        fail_msg: ".bashrc was not created"
+        success_msg: ".bashrc exists"
+
+    - name: Check if bash config directory exists
+      ansible.builtin.stat:
+        path: /home/testuser/.config/bash
+      register: bash_config_stat
+
+    - name: Verify bash config directory was created
+      ansible.builtin.assert:
+        that:
+          - bash_config_stat.stat.exists
+          - bash_config_stat.stat.isdir
+        fail_msg: "bash config directory was not created"
+        success_msg: "bash config directory exists"
+
+    - name: Check if devbox configuration is sourced in .bashrc
+      ansible.builtin.lineinfile:
+        path: /home/testuser/.bashrc
+        line: '[ -f "{{ playbook_dir }}/dotfile/bash/.bashrc" ] && source "{{ playbook_dir }}/dotfile/bash/.bashrc"'
+        state: present
+      check_mode: true
+      register: source_check
+
+    - name: Verify devbox configuration is sourced
+      ansible.builtin.assert:
+        that:
+          - not source_check.changed
+        fail_msg: "Devbox configuration sourcing not found in .bashrc"
+        success_msg: "Devbox configuration is properly sourced"
+
+    - name: Verify ansible managed block markers exist
+      ansible.builtin.lineinfile:
+        path: /home/testuser/.bashrc
+        line: "# BEGIN ANSIBLE MANAGED BLOCK - Devbox configuration"
+        state: present
+      check_mode: true
+      register: begin_marker_check
+
+    - name: Verify begin marker exists
+      ansible.builtin.assert:
+        that:
+          - not begin_marker_check.changed
+        fail_msg: "Ansible managed block begin marker not found"
+        success_msg: "Ansible managed block properly configured"
