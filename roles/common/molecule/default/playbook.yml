@@ -41,11 +41,3 @@
         name: npm
         state: present
       when: ansible_os_family == "Debian"
-
-  tasks:
-    - name: Include common role
-      ansible.builtin.include_role:
-        name: common
-      vars:
-        # Skip homebrew tasks in Docker
-        common_skip_homebrew: true

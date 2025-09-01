@@ -43,26 +43,17 @@
   environment:
     PATH: "/usr/local/opt/volta/bin:/opt/homebrew/bin:$PATH"
 
-- name: Enable corepack
+- name: Enable corepack and prepare Yarn
   ansible.builtin.shell: |
     export VOLTA_HOME="$HOME/.volta"
     export PATH="$VOLTA_HOME/bin:$PATH"
     corepack enable
-  args:
-    creates: "{{ ansible_env.HOME }}/.volta/bin/corepack"
-  environment:
-    PATH: "$HOME/.volta/bin:/usr/local/opt/volta/bin:/opt/homebrew/bin:{{ ansible_env.PATH }}"
-  changed_when: false
-
-- name: Prepare Yarn via corepack
-  ansible.builtin.shell: |
-    export VOLTA_HOME="$HOME/.volta"
-    export PATH="$VOLTA_HOME/bin:$PATH"
     corepack prepare yarn@stable --activate
   args:
     creates: "{{ ansible_env.HOME }}/.volta/bin/yarn"
   environment:
     PATH: "$HOME/.volta/bin:/usr/local/opt/volta/bin:/opt/homebrew/bin:{{ ansible_env.PATH }}"
+  changed_when: false
 
 - name: Install Claude Code globally
   community.general.npm:
